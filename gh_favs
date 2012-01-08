@@ -1,0 +1,154 @@
+#!/usr/bin/python
+"""gh_favs - Github Favorites
+
+A small script to clone and update all your watched GitHub projects
+
+(C) 2011 Manuel Strehl, some rights reserved
+
+This code is online: https://github.com/Boldewyn/gh_favs
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+
+__version__ = '1.0'
+
+
+import urllib2
+try:
+    import json
+except ImportError:
+    import simplejson as json
+import os
+from subprocess import check_output, call
+import logging
+try:
+    import argparse
+except ImportError:
+    import sys
+    argparse = None
+
+
+def fetch_favs(user, ignore, add_own=False):
+    """Fetch the list of watched repos for a user from GitHub
+
+    Own repos are excluded per default. Set add_own to True to add them."""
+    logger = logging.getLogger('github.favs')
+    r = urllib2.urlopen('http://github.com/api/v2/json/repos/watched/%s' %
+            user)
+    favs = []
+    if r.getcode() != 200:
+        logger.critical('Request failed with %s' % r.status_code)
+        raise ValueError('Request failed with %s' % r.status_code)
+    ls = json.loads(r.read())
+    for item in ls['repositories']:
+        if item['name'] not in ignore:
+            if add_own or item['owner'] != user:
+                favs.append([item['name'], '%s.git' % item['url']])
+    return favs
+
+
+def clone_favs(favs, target, quiet=True):
+    """Git-clone a list of repositories
+
+    favs is a list of 2-tuples of name and remote URL
+    target is the directory where to clone to
+    quiet suppresses most Git status messages"""
+    logger = logging.getLogger('github.favs')
+    i = 0
+    logger.info('Fetch repositories to %s' % target)
+    qflag = '-q'
+    if not quiet:
+        qflag = False
+    for fav in favs:
+        i += 1
+        os.chdir(target)
+        if os.path.isdir(fav[0]):
+            logger.info('Update %s (%s of %s)' % (fav[0], i, len(favs)))
+            os.chdir(fav[0])
+            call(filter(None, ['git', 'checkout', qflag, 'master']))
+            call(filter(None, ['git', 'pull', qflag, 'origin', 'master']))
+            br = check_output(['git', 'branch', '-r'])
+            if 'origin/gh-pages' in br:
+                br = check_output(['git', 'branch'])
+                if 'gh-pages' in br:
+                    call(filter(None, ['git', 'checkout', qflag, 'gh-pages']))
+                    call(filter(None,
+                        ['git', 'pull', qflag, 'origin', 'gh-pages']))
+                else:
+                    call(filter(None, ['git', 'checkout', qflag, '-b',
+                        'gh-pages', 'origin/gh-pages']))
+                call(filter(None, ['git', 'checkout', qflag, 'master']))
+        else:
+            logger.info('Clone %s (%s of %s)' % (fav[0], i, len(favs)))
+            os.mkdir(fav[0])
+            os.chdir(fav[0])
+            call(filter(None, ['git', 'clone', qflag, '--recursive', fav[1],
+                               '.']))
+            br = check_output(['git', 'branch', '-r'])
+            if 'origin/gh-pages' in br:
+                call(filter(None, ['git', 'checkout', qflag, '-b', 'gh-pages',
+                    'origin/gh-pages']))
+                call(filter(None, ['git', 'checkout', qflag, 'master']))
+
+
+def _get_args():
+    """Get the CLI args"""
+    global __version__, __doc__
+    if argparse is not None:
+        parser = argparse.ArgumentParser(prog='gh_favs',
+                formatter_class=argparse.RawDescriptionHelpFormatter,
+                description='Clone and update watched repositories on Github.',
+                epilog='About gh_favs:\n\n    '+'\n    '.join(__doc__.split('\n')[4:]))
+        parser.add_argument('user', metavar='USER',
+                help='Github user name')
+        parser.add_argument('-t', '--target', default='.',
+                help='directory where the clones live')
+        parser.add_argument('-i', '--ignore', nargs='*', metavar='NAME',
+                default=[],
+                help='repository names to be ignored')
+        parser.add_argument('-a', '--add_own', action='store_true',
+                help='clone own repositories, too')
+        parser.add_argument('-v', '--verbose', action='store_true',
+                help='include Git status messages')
+        parser.add_argument('--version', action='version', version='%(prog)s ' +
+                __version__)
+        args = parser.parse_args()
+    else:
+        class Dummy(object):
+            pass
+        args = Dummy()
+        args.user = sys.argv[1]
+        if len(sys.argv) > 2:
+            args.target = sys.argv[2]
+        else:
+            args.target = '.'
+        args.ignore = []
+        args.verbose = False
+        args.add_own = False
+
+    if not os.path.isdir(args.target):
+        logger = logging.getLogger('github.favs')
+        logger.debug('Create directory %s' % args.target)
+        os.makedirs(args.target)
+    return (args.target, args.user, args.ignore, args.verbose, args.add_own)
+
+
+if __name__ == '__main__':
+    logging.basicConfig(format='%(message)s')
+    logging.getLogger('github.favs').setLevel(logging.INFO)
+    target, user, ignore, verbose, add_own = _get_args()
+    clone_favs(fetch_favs(user, ignore, add_own=add_own), target, quiet=(not verbose))
+
+

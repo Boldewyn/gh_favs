@@ -1,0 +1,33 @@
+                           gh_favs - Github Favorites
+
+      A small script to clone and update all your watched GitHub projects
+
+
+usage: gh_favs [-h] [-t TARGET] [-i [NAME [NAME ...]]] [-a] [-v] [--version]
+               USER
+
+
+positional arguments:
+  USER                  Github user name
+
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -t TARGET, --target TARGET
+                        directory where the clones live
+  -i [NAME [NAME ...]], --ignore [NAME [NAME ...]]
+                        repository names to be ignored
+  -a, --add_own         clone own repositories, too
+  -v, --verbose         include Git status messages
+  --version             show program's version number and exit
+
+
+About gh_favs:
+    (C) 2011 Manuel Strehl, some rights reserved
+
+    This code is online: https://github.com/Boldewyn/gh_favs
+
+
+License:
+    This code is distributed under the terms of the GNU General Public License
+    (GPL). See LICENSE for details.
