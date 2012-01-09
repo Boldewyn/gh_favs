@@ -5,7 +5,7 @@ from distutils.core import setup
 
 setup(
     name = 'gh_favs',
-    version = '1.0',
+    version = '1.1',
     py_modules = ['gh_favs'],
     author = 'Manuel Strehl',
     author_email = 'boldewyn [at] googlemail.com',
