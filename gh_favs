@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 
-__version__ = '1.0'
+__version__ = '1.1'
 
 
 import urllib2
@@ -114,10 +114,10 @@ def _get_args():
         parser.add_argument('user', metavar='USER',
                 help='Github user name')
         parser.add_argument('-t', '--target', default='.',
-                help='directory where the clones live')
-        parser.add_argument('-i', '--ignore', nargs='*', metavar='NAME',
-                default=[],
-                help='repository names to be ignored')
+                metavar='DIR',
+                help='directory where the clones live, default is %(default)s')
+        parser.add_argument('-i', '--ignore', action='append', metavar='NAME',
+                help='repository names to be ignored, can appear multiple times')
         parser.add_argument('-a', '--add_own', action='store_true',
                 help='clone own repositories, too')
         parser.add_argument('-v', '--verbose', action='store_true',

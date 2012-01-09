@@ -3,8 +3,7 @@
       A small script to clone and update all your watched GitHub projects
 
 
-usage: gh_favs [-h] [-t TARGET] [-i [NAME [NAME ...]]] [-a] [-v] [--version]
-               USER
+usage: gh_favs [-t DIR] [-i NAME] [-a] [-v] USER
 
 
 positional arguments:
@@ -13,8 +12,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -t TARGET, --target TARGET
-                        directory where the clones live
+  -t DIR, --target DIR  directory where the clones live
   -i [NAME [NAME ...]], --ignore [NAME [NAME ...]]
                         repository names to be ignored
   -a, --add_own         clone own repositories, too
