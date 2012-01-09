@@ -13,7 +13,7 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -t DIR, --target DIR  directory where the clones live
-  -i [NAME [NAME ...]], --ignore [NAME [NAME ...]]
+  -i NAME [NAME ...], --ignore NAME [NAME ...]
                         repository names to be ignored
   -a, --add_own         clone own repositories, too
   -v, --verbose         include Git status messages

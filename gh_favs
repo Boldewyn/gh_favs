@@ -109,21 +109,25 @@ def _get_args():
     if argparse is not None:
         parser = argparse.ArgumentParser(prog='gh_favs',
                 formatter_class=argparse.RawDescriptionHelpFormatter,
-                description='Clone and update watched repositories on Github.',
-                epilog='About gh_favs:\n\n    '+'\n    '.join(__doc__.split('\n')[4:]))
+                description='Clone and update watched repositories ' +
+                            'on Github.',
+                epilog='About gh_favs:\n\n    ' +
+                       '\n    '.join(__doc__.split('\n')[4:]))
         parser.add_argument('user', metavar='USER',
                 help='Github user name')
         parser.add_argument('-t', '--target', default='.',
                 metavar='DIR',
-                help='directory where the clones live, default is %(default)s')
-        parser.add_argument('-i', '--ignore', action='append', metavar='NAME',
-                help='repository names to be ignored, can appear multiple times')
+                help='directory where the clones live, default is ' +
+                     '%(default)s')
+        parser.add_argument('-i', '--ignore', nargs='+', metavar='NAME',
+                help='repository names to be ignored, can be followed ' +
+                'by multiple items')
         parser.add_argument('-a', '--add_own', action='store_true',
                 help='clone own repositories, too')
         parser.add_argument('-v', '--verbose', action='store_true',
                 help='include Git status messages')
-        parser.add_argument('--version', action='version', version='%(prog)s ' +
-                __version__)
+        parser.add_argument('--version', action='version',
+                version='%(prog)s ' + __version__)
         args = parser.parse_args()
     else:
         # argparse not installed: let's fall back to minimal
