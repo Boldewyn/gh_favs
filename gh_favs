@@ -126,14 +126,23 @@ def _get_args():
                 __version__)
         args = parser.parse_args()
     else:
+        # argparse not installed: let's fall back to minimal
+        # functionality
         class Dummy(object):
             pass
         args = Dummy()
-        args.user = sys.argv[1]
-        if len(sys.argv) > 2:
+        if len(sys.argv) not in [2,4]:
+            print 'usage: gh_favs [-t DIR] USER'
+            exit()
+        if len(sys.argv) == 2 and sys.argv[1][0] != '-':
+            args.user = sys.argv[1]
+            args.target = '.'
+        elif len(sys.argv) == 4 and sys.argv[1] in ['--target', '-t']:
+            args.user = sys.argv[3]
             args.target = sys.argv[2]
         else:
-            args.target = '.'
+            print 'usage: gh_favs [-t DIR] USER'
+            exit()
         args.ignore = []
         args.verbose = False
         args.add_own = False
