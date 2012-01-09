@@ -1,6 +1,14 @@
 
 
-from distutils.core import setup
+from setuptools import setup
+import sys
+
+
+REQUIREMENTS = []
+if sys.version_info < (2, 7):
+    REQUIREMENTS.append("argparse")
+if sys.version_info < (2, 6):
+    REQUIREMENTS.append("simplejson")
 
 
 setup(
@@ -26,5 +34,6 @@ setup(
         'Topic :: System :: Archiving :: Backup',
         'Topic :: System :: Archiving :: Mirroring',
         'Topic :: Utilities',
-    ]
+    ],
+    install_requires = REQUIREMENTS
 )
