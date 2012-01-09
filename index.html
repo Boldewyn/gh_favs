@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>gh_favs - A small script to clone and update all your watched
+    GitHub projects</title>
+    <style>
+html {
+  background: #f8f8f8;
+}
+body {
+  width: 640px;
+  border-right: 1px solid #eee;
+  background: white;
+  color: #333;
+  margin: 0;
+  padding: 10px;
+}
+    </style>
+  </head>
+  <body>
+    <a href="https://github.com/Boldewyn/gh_favs"><img alt="Fork me on GitHub"
+    src="http://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    style="position: absolute; top: 0; left: 510px; border: 0;"></a>
+    <pre>
+                               gh_favs - Github Favorites
+
+      A small script to clone and update all your watched GitHub projects
+
+
+usage: gh_favs [-t DIR] [-i NAME] [-a] [-v] USER
+
+
+positional arguments:
+  USER                  Github user name
+
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -t DIR, --target DIR  directory where the clones live
+  -i NAME [NAME ...], --ignore NAME [NAME ...]
+                        repository names to be ignored
+  -a, --add_own         clone own repositories, too
+  -v, --verbose         include Git status messages
+  --version             show program's version number and exit
+
+
+Installation:
+    Use easy_install:
+    $ easy_install gh_favs
+    or pip:
+    $ pip install gh_favs
+    The script should work just fine with Python 2.5 or newer, however not yet
+    with Python 3. For Python 2.5 you need simplejson
+    (&lt;<a href="https://github.com/simplejson/simplejson">https://github.com/simplejson/simplejson</a>>) installed, for full CLI
+    power argparse (both come with Python 2.7).
+
+
+About gh_favs:
+    (C) 2011 Manuel Strehl, some rights reserved
+
+    This code is online: <a href="https://github.com/Boldewyn/gh_favs">https://github.com/Boldewyn/gh_favs</a>
+
+
+License:
+    This code is distributed under the terms of the GNU General Public License
+    (GPL). See <a
+    href="https://github.com/Boldewyn/gh_favs/master/LICENSE">LICENSE</a> for details.</pre>
+  </body>
+</html>
