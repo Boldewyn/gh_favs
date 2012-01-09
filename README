@@ -20,14 +20,15 @@ optional arguments:
   --version             show program's version number and exit
 
 
-
 Installation:
     Use easy_install:
     $ easy_install gh_favs
     or pip:
     $ pip install gh_favs
-    The script should work just fine with Python 2.5 or newer, however not yet with Python 3. For
-    Python 2.5 you need simplejson (<https://github.com/simplejson/simplejson>) installed.
+    The script should work just fine with Python 2.5 or newer, however not yet
+    with Python 3. For Python 2.5 you need simplejson
+    (<https://github.com/simplejson/simplejson>) installed, for full CLI
+    power argparse (both come with Python 2.7).
 
 
 About gh_favs:
