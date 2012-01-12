@@ -3,19 +3,23 @@
       A small script to clone and update all your watched GitHub projects
 
 
-usage: gh_favs [-t DIR] [-i NAME] [-a] [-v] USER
+Usage: gh_favs [-t DIR] [-i NAME] [-a] [-n] [-s STRATEGY] [-v] USER
 
 
-positional arguments:
+Positional arguments:
   USER                  Github user name
 
 
-optional arguments:
+Optional arguments:
   -h, --help            show this help message and exit
-  -t DIR, --target DIR  directory where the clones live
+  -t DIR, --target DIR  directory where the clones live, default is "."
   -i NAME [NAME ...], --ignore NAME [NAME ...]
-                        repository names to be ignored
+                        repository names to be ignored, can be followed by
+                        multiple items
   -a, --add_own         clone own repositories, too
+  -n, --no_docs         don't fetch origin/gh_pages
+  -s {subfolders,prefix,none}, --strategy {subfolders,prefix,none}
+                        how to handle name clashes, default is "subfolders"
   -v, --verbose         include Git status messages
   --version             show program's version number and exit
 

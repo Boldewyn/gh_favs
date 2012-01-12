@@ -37,8 +37,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
+along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 __version__ = '1.1'
@@ -164,17 +163,18 @@ def _get_args():
         parser.add_argument('-t', '--target', default='.',
                 metavar='DIR',
                 help='directory where the clones live, default is ' +
-                     '%(default)s')
+                     '"%(default)s"')
         parser.add_argument('-i', '--ignore', nargs='+', metavar='NAME',
                 help='repository names to be ignored, can be followed ' +
-                'by multiple items')
+                     'by multiple items')
         parser.add_argument('-a', '--add_own', action='store_true',
                 help='clone own repositories, too')
         parser.add_argument('-n', '--no_docs', action='store_true',
                 help='don\'t fetch origin/gh_pages')
         parser.add_argument('-s', '--strategy', choices=['subfolders',
                 'prefix', 'none'], default='subfolders',
-                help='how to handle name clashes')
+                help='how to handle name clashes, default is ' +
+                     '"%(default)s"')
         parser.add_argument('-v', '--verbose', action='store_true',
                 help='include Git status messages')
         parser.add_argument('--version', action='version',
