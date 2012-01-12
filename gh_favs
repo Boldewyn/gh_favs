@@ -44,18 +44,21 @@ def fetch_favs(user, ignore, add_own=False):
     """Fetch the list of watched repos for a user from GitHub
 
     Own repos are excluded per default. Set add_own to True to add them."""
+
     logger = logging.getLogger('github.favs')
     r = urllib2.urlopen('http://github.com/api/v2/json/repos/watched/%s' %
             user)
     favs = []
+
     if r.getcode() != 200:
         logger.critical('Request failed with %s' % r.status_code)
         raise ValueError('Request failed with %s' % r.status_code)
+
     ls = json.loads(r.read())
     for item in ls['repositories']:
-        if item['name'] not in ignore:
-            if add_own or item['owner'] != user:
-                favs.append([item['name'], '%s.git' % item['url']])
+        if (item['name'] not in ignore and
+            (add_own or item['owner'] != user)):
+            favs.append([item['name'], '%s.git' % item['url'], item['owner']])
     return favs
 
 
@@ -65,12 +68,15 @@ def clone_favs(favs, target, quiet=True):
     favs is a list of 2-tuples of name and remote URL
     target is the directory where to clone to
     quiet suppresses most Git status messages"""
+
     logger = logging.getLogger('github.favs')
     i = 0
     logger.info('Fetch repositories to %s' % target)
-    qflag = '-q'
-    if not quiet:
-        qflag = False
+
+    qflag = False
+    if quiet:
+        qflag = '-q'
+
     for fav in favs:
         i += 1
         os.chdir(target)
