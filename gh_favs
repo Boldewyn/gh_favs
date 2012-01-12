@@ -62,7 +62,7 @@ def fetch_favs(user, ignore, add_own=False):
     return favs
 
 
-def clone_favs(favs, target, quiet=True):
+def clone_favs(favs, target, quiet=True, with_docs=True):
     """Git-clone a list of repositories
 
     favs is a list of 2-tuples of name and remote URL
@@ -77,36 +77,36 @@ def clone_favs(favs, target, quiet=True):
     if quiet:
         qflag = '-q'
 
+    def _call(a):
+        call(filter(None, a))
+
     for fav in favs:
         i += 1
         os.chdir(target)
+
         if os.path.isdir(fav[0]):
             logger.info('Update %s (%s of %s)' % (fav[0], i, len(favs)))
             os.chdir(fav[0])
-            call(filter(None, ['git', 'checkout', qflag, 'master']))
-            call(filter(None, ['git', 'pull', qflag, 'origin', 'master']))
+            _call(['git', 'checkout', qflag, 'master'])
+            _call(['git', 'pull', qflag, 'origin', 'master'])
+        else:
+            logger.info('Clone %s (%s of %s)' % (fav[0], i, len(favs)))
+            os.makedirs(fav[0])
+            os.chdir(fav[0])
+            _call(['git', 'clone', qflag, '--recursive', fav[1], '.'])
+
+        if with_docs:
+            # check out docs / website
             br = check_output(['git', 'branch', '-r'])
             if 'origin/gh-pages' in br:
                 br = check_output(['git', 'branch'])
                 if 'gh-pages' in br:
-                    call(filter(None, ['git', 'checkout', qflag, 'gh-pages']))
-                    call(filter(None,
-                        ['git', 'pull', qflag, 'origin', 'gh-pages']))
+                    _call(['git', 'checkout', qflag, 'gh-pages'])
+                    _call(['git', 'pull', qflag, 'origin', 'gh-pages'])
                 else:
-                    call(filter(None, ['git', 'checkout', qflag, '-b',
-                        'gh-pages', 'origin/gh-pages']))
-                call(filter(None, ['git', 'checkout', qflag, 'master']))
-        else:
-            logger.info('Clone %s (%s of %s)' % (fav[0], i, len(favs)))
-            os.mkdir(fav[0])
-            os.chdir(fav[0])
-            call(filter(None, ['git', 'clone', qflag, '--recursive', fav[1],
-                               '.']))
-            br = check_output(['git', 'branch', '-r'])
-            if 'origin/gh-pages' in br:
-                call(filter(None, ['git', 'checkout', qflag, '-b', 'gh-pages',
-                    'origin/gh-pages']))
-                call(filter(None, ['git', 'checkout', qflag, 'master']))
+                    _call(['git', 'checkout', qflag, '-b', 'gh-pages',
+                           'origin/gh-pages'])
+                _call(['git', 'checkout', qflag, 'master'])
 
 
 def _get_args():
@@ -130,6 +130,8 @@ def _get_args():
                 'by multiple items')
         parser.add_argument('-a', '--add_own', action='store_true',
                 help='clone own repositories, too')
+        parser.add_argument('-n', '--no_docs', action='store_true',
+                help='don\'t fetch origin/gh_pages')
         parser.add_argument('-v', '--verbose', action='store_true',
                 help='include Git status messages')
         parser.add_argument('--version', action='version',
@@ -156,18 +158,22 @@ def _get_args():
         args.ignore = []
         args.verbose = False
         args.add_own = False
+        args.no_docs = False
 
     if not os.path.isdir(args.target):
         logger = logging.getLogger('github.favs')
         logger.debug('Create directory %s' % args.target)
         os.makedirs(args.target)
-    return (args.target, args.user, args.ignore, args.verbose, args.add_own)
+    return (args.target, args.user, args.ignore, args.verbose, args.add_own,
+            args.no_docs)
 
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(message)s')
     logging.getLogger('github.favs').setLevel(logging.INFO)
-    target, user, ignore, verbose, add_own = _get_args()
-    clone_favs(fetch_favs(user, ignore, add_own=add_own), target, quiet=(not verbose))
+    target, user, ignore, verbose, add_own, no_docs = _get_args()
+    clone_favs(
+        fetch_favs(user, ignore, add_own=add_own),
+        target, quiet=(not verbose), with_docs=(not no_docs))
 
 
