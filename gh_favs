@@ -7,6 +7,25 @@ A small script to clone and update all your watched GitHub projects
 
 This code is online: https://github.com/Boldewyn/gh_favs
 
+
+Conflict strategies:
+
+If you watch several forks of a project, the name of the forks is
+identical. To come around this issue when cloning all of them, there are
+several strategies, controlled by the --strategy flag:
+
+* subfolders: create one folder for each Github user and clone her
+  repositories there
+* prefix: prefix double names with the corresponding user name: Abba's
+  charts.git and Zappa's charts.git would end up as Abba-charts and
+  Zappa-charts. Note that this is not future-proof. If you start
+  watching a fork, the originally cloned repository will not be renamed
+* nothing: first come, first serve. Only the first of identical projects
+  will be cloned / updated. All others will be ignored.
+
+
+Copyright:
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -109,6 +128,27 @@ def clone_favs(favs, target, quiet=True, with_docs=True):
                 _call(['git', 'checkout', qflag, 'master'])
 
 
+def resolve_fav_conflicts(favs, strategy=None):
+    """resolve name conflicts, e.g., when forks are watched"""
+    if strategy == 'prefix':
+        doubles = {}
+        for fav in favs:
+            if fav[0] in doubles:
+                doubles[fav[0]] += 1
+            else:
+                doubles[fav[0]] = 1
+        for k, v in doubles.iteritems():
+            if v == 1:
+                del doubles[k]
+        for i, fav in enumerate(favs):
+            if fav[0] in doubles:
+                favs[i][0] = fav[2] + '-' + fav[0]
+    elif strategy == 'subfolders':
+        for i, fav in enumerate(favs):
+            favs[i][0] = fav[2] + '/' + fav[0]
+    return favs
+
+
 def _get_args():
     """Get the CLI args"""
     global __version__, __doc__
@@ -132,6 +172,9 @@ def _get_args():
                 help='clone own repositories, too')
         parser.add_argument('-n', '--no_docs', action='store_true',
                 help='don\'t fetch origin/gh_pages')
+        parser.add_argument('-s', '--strategy', choices=['subfolders',
+                'prefix', 'none'], default='subfolders',
+                help='how to handle name clashes')
         parser.add_argument('-v', '--verbose', action='store_true',
                 help='include Git status messages')
         parser.add_argument('--version', action='version',
@@ -159,21 +202,24 @@ def _get_args():
         args.verbose = False
         args.add_own = False
         args.no_docs = False
+        args.strategy = 'subfolders'
 
     if not os.path.isdir(args.target):
         logger = logging.getLogger('github.favs')
         logger.debug('Create directory %s' % args.target)
         os.makedirs(args.target)
     return (args.target, args.user, args.ignore, args.verbose, args.add_own,
-            args.no_docs)
+            args.no_docs, args.strategy)
 
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(message)s')
     logging.getLogger('github.favs').setLevel(logging.INFO)
-    target, user, ignore, verbose, add_own, no_docs = _get_args()
+    target, user, ignore, verbose, add_own, no_docs, strategy = _get_args()
     clone_favs(
-        fetch_favs(user, ignore, add_own=add_own),
+        resolve_fav_conflicts(
+            fetch_favs(user, ignore, add_own=add_own),
+            strategy),
         target, quiet=(not verbose), with_docs=(not no_docs))
 
 
