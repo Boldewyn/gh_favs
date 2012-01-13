@@ -53,10 +53,10 @@ except ImportError:
 import os
 import subprocess
 import logging
+import sys
 try:
     import argparse
 except ImportError:
-    import sys
     argparse = None
 
 
