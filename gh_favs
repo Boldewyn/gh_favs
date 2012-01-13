@@ -5,39 +5,41 @@ A small script to clone and update all your watched GitHub projects
 
 (C) 2011 Manuel Strehl, some rights reserved
 
-This code is online: https://github.com/Boldewyn/gh_favs
+    This code is online: https://github.com/Boldewyn/gh_favs
 
 
 Conflict strategies:
 
-If you watch several forks of a project, the name of the forks is
-identical. To come around this issue when cloning all of them, there are
-several strategies, controlled by the --strategy flag:
+    If you watch several forks of a project, the name of the forks is
+    identical. To come around this issue when cloning all of them, there
+    are several strategies, controlled by the --strategy flag:
 
-* subfolders: create one folder for each Github user and clone her
-  repositories there
-* prefix: prefix double names with the corresponding user name: Abba's
-  charts.git and Zappa's charts.git would end up as Abba-charts and
-  Zappa-charts. Note that this is not future-proof. If you start
-  watching a fork, the originally cloned repository will not be renamed
-* none: first come, first serve. Only the first of identical projects
-  will be cloned / updated. All others will be ignored.
+    * subfolders: create one folder for each Github user and clone her
+      repositories there
+    * prefix: prefix double names with the corresponding user name:
+      Abba's charts.git and Zappa's charts.git would end up as
+      Abba-charts and Zappa-charts. Note that this is not future-proof.
+      If you start watching a fork, the originally cloned repository
+      will not be renamed
+    * none: first come, first serve. Only the first of identical
+      projects will be cloned / updated. All others will be ignored.
 
 
-Copyright:
+License:
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see
+    <http://www.gnu.org/licenses/>."""
 
 
 __version__ = '1.1'
@@ -157,7 +159,7 @@ def _get_args():
                 description='Clone and update watched repositories ' +
                             'on Github.',
                 epilog='About gh_favs:\n\n    ' +
-                       '\n    '.join(__doc__.split('\n')[4:]))
+                       '\n'.join(__doc__.split('\n')[4:]))
         parser.add_argument('user', metavar='USER',
                 help='Github user name')
         parser.add_argument('-t', '--target', default='.',
