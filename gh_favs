@@ -60,7 +60,7 @@ except ImportError:
     argparse = None
 
 
-def fetch_favs(user, ignore, add_own=False):
+def fetch_favs(user, ignore=[], add_own=False):
     """Fetch the list of watched repos for a user from GitHub
 
     Own repos are excluded per default. Set add_own to True to add them."""
@@ -153,7 +153,7 @@ def resolve_fav_conflicts(favs, strategy=None):
     return favs
 
 
-def _get_args():
+def _get_args(argv=None):
     """Get the CLI args"""
     global __version__, __doc__
     if argparse is not None:
@@ -184,7 +184,7 @@ def _get_args():
                 help='include Git status messages')
         parser.add_argument('--version', action='version',
                 version='%(prog)s ' + __version__)
-        args = parser.parse_args()
+        args = parser.parse_args(argv)
     else:
         # argparse not installed: let's fall back to minimal
         # functionality
