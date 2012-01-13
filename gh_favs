@@ -145,15 +145,15 @@ def resolve_fav_conflicts(favs, strategy=None):
                 doubles[fav[0]] += 1
             else:
                 doubles[fav[0]] = 1
-        for k, v in doubles.iteritems():
+        for k, v in doubles.items():
             if v == 1:
                 del doubles[k]
         for i, fav in enumerate(favs):
             if fav[0] in doubles:
-                favs[i][0] = fav[2] + '-' + fav[0]
+                favs[i] = (fav[2] + '-' + fav[0], fav[1], fav[2])
     elif strategy == 'subfolders':
         for i, fav in enumerate(favs):
-            favs[i][0] = fav[2] + '/' + fav[0]
+            favs[i] = (fav[2] + '/' + fav[0], fav[1], fav[2])
     return favs
 
 
