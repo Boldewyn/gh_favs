@@ -51,7 +51,7 @@ try:
 except ImportError:
     import simplejson as json
 import os
-from subprocess import check_output, call
+import subprocess
 import logging
 try:
     import argparse
@@ -101,7 +101,11 @@ def clone_favs(favs, target, quiet=True, with_docs=True):
         qflag = '-q'
 
     def _call(a):
-        call(filter(None, a))
+        stdout, stderr = subprocess.Popen(filter(None, a),
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT).communicate()
+        if '-q' not in a:
+            print stdout,
 
     for fav in favs:
         i += 1
@@ -120,9 +124,9 @@ def clone_favs(favs, target, quiet=True, with_docs=True):
 
         if with_docs:
             # check out docs / website
-            br = check_output(['git', 'branch', '-r'])
+            br = subprocess.check_output(['git', 'branch', '-r'])
             if 'origin/gh-pages' in br:
-                br = check_output(['git', 'branch'])
+                br = subprocess.check_output(['git', 'branch'])
                 if 'gh-pages' in br:
                     _call(['git', 'checkout', qflag, 'gh-pages'])
                     _call(['git', 'pull', qflag, 'origin', 'gh-pages'])
