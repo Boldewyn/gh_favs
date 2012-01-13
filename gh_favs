@@ -176,7 +176,7 @@ def _get_args(argv=None):
         parser.add_argument('-i', '--ignore', nargs='+', metavar='NAME',
                 help='repository names to be ignored, can be followed ' +
                      'by multiple items')
-        parser.add_argument('-a', '--add_own', action='store_true',
+        parser.add_argument('-o', '--add_own', action='store_true',
                 help='clone own repositories, too')
         parser.add_argument('-n', '--no_docs', action='store_true',
                 help='don\'t fetch origin/gh_pages')

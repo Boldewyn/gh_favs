@@ -3,7 +3,7 @@
       A small script to clone and update all your watched GitHub projects
 
 
-Usage: gh_favs [-t DIR] [-i NAME] [-a] [-n] [-s STRATEGY] [-v] USER
+Usage: gh_favs [-t DIR] [-i NAME] [-o] [-n] [-s STRATEGY] [-v] USER
 
 
 Positional arguments:
@@ -16,7 +16,7 @@ Optional arguments:
   -i NAME [NAME ...], --ignore NAME [NAME ...]
                         repository names to be ignored, can be followed by
                         multiple items
-  -a, --add_own         clone own repositories, too
+  -o, --add_own         clone own repositories, too
   -n, --no_docs         don't fetch origin/gh_pages
   -s {subfolders,prefix,none}, --strategy {subfolders,prefix,none}
                         how to handle name clashes, default is "subfolders"
