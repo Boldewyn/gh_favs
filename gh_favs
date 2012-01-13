@@ -66,8 +66,11 @@ def fetch_favs(user, ignore, add_own=False):
     Own repos are excluded per default. Set add_own to True to add them."""
 
     logger = logging.getLogger('github.favs')
-    r = urllib2.urlopen('http://github.com/api/v2/json/repos/watched/%s' %
-            user)
+    try:
+        r = urllib2.urlopen('http://github.com/api/v2/json/repos/watched/%s' %
+                            user)
+    except urllib2.URLError:
+        raise ValueError('Request failed. Are you online?')
     favs = []
 
     if r.getcode() != 200:
@@ -218,10 +221,14 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(message)s')
     logging.getLogger('github.favs').setLevel(logging.INFO)
     target, user, ignore, verbose, add_own, no_docs, strategy = _get_args()
-    clone_favs(
-        resolve_fav_conflicts(
-            fetch_favs(user, ignore, add_own=add_own),
-            strategy),
-        target, quiet=(not verbose), with_docs=(not no_docs))
+    try:
+        clone_favs(
+            resolve_fav_conflicts(
+                fetch_favs(user, ignore, add_own=add_own),
+                strategy),
+            target, quiet=(not verbose), with_docs=(not no_docs))
+    except ValueError, e:
+        sys.stderr.write('An error occured: %s\n' % e)
+        sys.stderr.flush()
 
 
