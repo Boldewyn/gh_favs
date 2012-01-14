@@ -32,7 +32,8 @@ class TestFavs(unittest.TestCase):
         global path
         self.testfavs = [('a', 'a', 'a'), ('a', 'b', 'b'),
                          ('c', 'c', 'c')]
-        self.mefav = [('gh_favs', os.path.dirname(path), 'Boldewyn')]
+        self.path = os.path.dirname(path)
+        self.mefav = [('gh_favs', self.path, 'Boldewyn')]
         self.tmpdir = tempfile.mkdtemp()
         self.stdout = sys.stdout = StringIO()
         self.stderr = sys.stderr = StringIO()
@@ -101,16 +102,33 @@ class TestFavs(unittest.TestCase):
         gh_favs.clone_favs(self.mefav, self.tmpdir, quiet=False)
         self.assertTrue(os.path.isdir(self.tmpdir + os.sep + 'gh_favs'))
 
+    def test_clone_relative(self):
+        """clone to a relative target"""
+        try:
+            cur = os.getcwd()
+        except OSError:
+            cur = None
+        os.chdir(self.tmpdir)
+        gh_favs.clone_favs([
+            ('a/b', self.path, 'a'),
+            ('b/b', self.path, 'b'),
+        ], '.')
+        if cur:
+            os.chdir(cur)
+        self.assertTrue(os.path.isdir(self.tmpdir + os.sep + 'a/b'))
+        self.assertTrue(os.path.isdir(self.tmpdir + os.sep + 'b/b'))
+        self.assertFalse(os.path.exists(self.tmpdir + os.sep + 'a/b/b/b'))
+
     def test_cli_target(self):
         """fetch CLI arguments with target"""
         args = gh_favs._get_args(['-t', 'a', 'b'])
-        self.assertTrue(args == ('a', 'b', None, False, False, False,
+        self.assertTrue(args == ('a', 'b', [], False, False, False,
                         'subfolders'))
 
     def test_cli_strategy(self):
         """fetch CLI arguments with strategy"""
         args = gh_favs._get_args(['-s', 'prefix', 'b'])
-        self.assertTrue(args == ('.', 'b', None, False, False, False,
+        self.assertTrue(args == ('.', 'b', [], False, False, False,
                         'prefix'))
 
     def test_cli_strategy_fail(self):
@@ -131,6 +149,6 @@ class TestFavs(unittest.TestCase):
     def test_cli_special(self):
         """fetch CLI arguments with flags set"""
         args = gh_favs._get_args(['-v', '-o', '-n', 'b'])
-        self.assertTrue(args == ('.', 'b', None, True, True, True,
+        self.assertTrue(args == ('.', 'b', [], True, True, True,
                         'subfolders'))
 

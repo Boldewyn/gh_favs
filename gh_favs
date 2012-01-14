@@ -96,6 +96,8 @@ def clone_favs(favs, target, quiet=True, with_docs=True):
     i = 0
     logger.info('Fetch repositories to %s' % target)
 
+    target = os.path.abspath(target)
+
     qflag = False
     if quiet:
         qflag = '-q'
