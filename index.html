@@ -28,7 +28,7 @@ body {
       A small script to clone and update all your watched GitHub projects
 
 
-usage: gh_favs [-t DIR] [-i NAME] [-a] [-v] USER
+usage: gh_favs [-t DIR] [-i NAME] [-o] [-n] [-s STRATEGY] [-v] USER
 
 
 positional arguments:
@@ -37,10 +37,14 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -t DIR, --target DIR  directory where the clones live
-  -i NAME [NAME ...], --ignore NAME [NAME ...]
+  -t, --target DIR      directory where the clones live
+  -i, --ignore NAME [NAME ...]
                         repository names to be ignored
-  -a, --add_own         clone own repositories, too
+  -o, --add_own         clone own repositories, too
+  -n, --no_docs         don't fetch origin/gh_pages
+  -s, --strategy {subfolders,prefix,none}
+                        how to handle name clashes, default is
+                        "subfolders"
   -v, --verbose         include Git status messages
   --version             show program's version number and exit
 
@@ -53,13 +57,30 @@ Installation:
     The script should work just fine with Python 2.5 or newer, however not yet
     with Python 3. For Python 2.5 you need simplejson
     (&lt;<a href="https://github.com/simplejson/simplejson">https://github.com/simplejson/simplejson</a>>) installed, for full CLI
-    power argparse (both come with Python 2.7).
+    power argparse (both come packaged with Python 2.7).
 
 
 About gh_favs:
     (C) 2011 Manuel Strehl, some rights reserved
 
     This code is online: <a href="https://github.com/Boldewyn/gh_favs">https://github.com/Boldewyn/gh_favs</a>
+
+
+Conflict strategies:
+
+    If you watch several forks of a project, the name of the forks is
+    identical. To come around this issue when cloning all of them, there
+    are several strategies, controlled by the --strategy flag:
+
+    * subfolders: create one folder for each Github user and clone her
+      repositories there
+    * prefix: prefix double names with the corresponding user name:
+      Abba's charts.git and Zappa's charts.git would end up as
+      Abba-charts and Zappa-charts. Note that this is not future-proof.
+      If you start watching a fork, the originally cloned repository
+      will not be renamed
+    * none: first come, first serve. Only the first of identical
+      projects will be cloned / updated. All others will be ignored.
 
 
 License:
