@@ -13,7 +13,7 @@ if sys.version_info < (2, 6):
 
 setup(
     name = 'gh_favs',
-    version = '1.1',
+    version = '2.0',
     py_modules = ['gh_favs'],
     author = 'Manuel Strehl',
     author_email = 'boldewyn [at] googlemail.com',
