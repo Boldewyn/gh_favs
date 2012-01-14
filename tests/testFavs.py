@@ -46,14 +46,17 @@ class TestFavs(unittest.TestCase):
 
     @unittest.skipIf(not online, 'offline')
     def test_exclude_own(self):
+        """exclude own repos"""
         favs1 = gh_favs.fetch_favs('Boldewyn', [], True)
         favs2 = gh_favs.fetch_favs('Boldewyn', [], False)
         self.assertTrue(len(favs2) < len(favs1))
 
     @unittest.skipIf(not online, 'offline')
     def test_ignore(self):
-        favs1 = gh_favs.fetch_favs('Boldewyn', [], True)
-        favs2 = gh_favs.fetch_favs('Boldewyn', ['gh_favs'], True)
+        """ignore some repositories"""
+        favs1 = gh_favs.fetch_favs('Boldewyn', [], False)
+        # Let's boldly assume, I'll always watch jquery/jquery
+        favs2 = gh_favs.fetch_favs('Boldewyn', ['jquery'], False)
         self.assertTrue(len(favs2) < len(favs1))
 
     def test_resolve_prefix(self):
@@ -72,7 +75,7 @@ class TestFavs(unittest.TestCase):
         self.assertTrue(('c/c', 'c', 'c') in favs)
 
     def test_resolve_none(self):
-        """don't resolve conflicts"""
+        """don't resolve conflicts in any way"""
         favs = gh_favs.resolve_fav_conflicts(self.testfavs,
                 'subfolders')
         self.assertEqual(self.testfavs, favs)
@@ -111,6 +114,7 @@ class TestFavs(unittest.TestCase):
                         'prefix'))
 
     def test_cli_strategy_fail(self):
+        """make sure, that non-existing strategies are not allowed"""
         try:
             args = gh_favs._get_args(['-s', 'foobar', 'b'])
         except:
