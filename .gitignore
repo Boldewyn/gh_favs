@@ -1,3 +1,4 @@
 /dist
 *.pyc
 /gh_favsc
+/gh_favs.egg-info
