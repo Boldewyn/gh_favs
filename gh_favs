@@ -60,15 +60,15 @@ except ImportError:
     argparse = None
 
 
-def fetch_favs(user, ignore=[], add_own=False):
+def fetch_favs(user, ignore=[], add_own=False, page=1):
     """Fetch the list of watched repos for a user from GitHub
 
     Own repos are excluded per default. Set add_own to True to add them."""
 
     logger = logging.getLogger('github.favs')
     try:
-        r = urllib2.urlopen('http://github.com/api/v2/json/repos/watched/%s' %
-                            user)
+        r = urllib2.urlopen('https://api.github.com/users/%s/watched?page=%s' %
+                            (user, page))
     except urllib2.URLError:
         raise ValueError('Request failed. Are you online?')
     favs = []
@@ -78,10 +78,14 @@ def fetch_favs(user, ignore=[], add_own=False):
         raise ValueError('Request failed with %s' % r.status_code)
 
     ls = json.loads(r.read())
-    for item in ls['repositories']:
+    for item in ls:
         if (item['name'] not in ignore and
-            (add_own or item['owner'] != user)):
-            favs.append([item['name'], '%s.git' % item['url'], item['owner']])
+            (add_own or item['owner']['login'] != user)):
+            favs.append([item['name'], '%s.git' % item['url'], item['owner']['login']])
+
+    link = r.headers.getheader('Link')
+    if 'rel="next"' in link:
+        favs.extend(fetch_favs(user, ignore, add_own, page+1))
     return favs
 
 
