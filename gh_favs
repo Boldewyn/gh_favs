@@ -42,7 +42,7 @@ License:
     <http://www.gnu.org/licenses/>."""
 
 
-__version__ = '3.0'
+__version__ = '3.1'
 
 
 import urllib2
@@ -60,12 +60,14 @@ except ImportError:
     argparse = None
 
 
-def fetch_favs(user, ignore=[], add_own=False, page=1):
+def fetch_favs(user, ignore=[], add_own=False, quiet=True, page=1):
     """Fetch the list of watched repos for a user from GitHub
 
     Own repos are excluded per default. Set add_own to True to add them."""
 
     logger = logging.getLogger('github.favs')
+    if not quiet:
+        logger.info('Fetch page %s' % page)
     try:
         r = urllib2.urlopen('https://api.github.com/users/%s/watched?page=%s' %
                             (user, page))
@@ -81,11 +83,11 @@ def fetch_favs(user, ignore=[], add_own=False, page=1):
     for item in ls:
         if (item['name'] not in ignore and
             (add_own or item['owner']['login'] != user)):
-            favs.append([item['name'], '%s.git' % item['url'], item['owner']['login']])
+            favs.append([item['name'], item['clone_url'], item['owner']['login']])
 
     link = r.headers.getheader('Link')
     if 'rel="next"' in link:
-        favs.extend(fetch_favs(user, ignore, add_own, page+1))
+        favs.extend(fetch_favs(user, ignore, add_own, quiet, page+1))
     return favs
 
 
@@ -107,11 +109,14 @@ def clone_favs(favs, target, quiet=True, with_docs=True):
         qflag = '-q'
 
     def _call(a):
+        logger.debug(' '.join(filter(None, a)))
         stdout, stderr = subprocess.Popen(filter(None, a),
                             stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT).communicate()
-        if '-q' not in a:
-            print stdout,
+        if quiet:
+            logger.debug(stdout)
+        else:
+            logger.info(stdout)
 
     for fav in favs:
         i += 1
@@ -235,7 +240,7 @@ if __name__ == '__main__':
     try:
         clone_favs(
             resolve_fav_conflicts(
-                fetch_favs(user, ignore, add_own=add_own),
+                fetch_favs(user, ignore, add_own=add_own, quiet=(not verbose)),
                 strategy),
             target, quiet=(not verbose), with_docs=(not no_docs))
     except ValueError, e:
