@@ -2,6 +2,8 @@
 
 from setuptools import setup
 import sys
+import os
+import imp
 
 
 REQUIREMENTS = []
@@ -11,9 +13,15 @@ if sys.version_info < (2, 6):
     REQUIREMENTS.append("simplejson")
 
 
+path = (os.path.abspath(os.path.dirname(os.path.dirname(__file__))) +
+        os.sep + 'gh_favs')
+gh_favs = imp.load_module('gh_favs', open(path), path,
+                          ('', 'r', imp.PY_SOURCE))
+
+
 setup(
     name = 'gh_favs',
-    version = '3.1',
+    version = gh_favs.__version__,
     py_modules = ['gh_favs'],
     author = 'Manuel Strehl',
     author_email = 'boldewyn [at] googlemail.com',

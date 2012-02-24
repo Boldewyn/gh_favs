@@ -42,7 +42,7 @@ License:
     <http://www.gnu.org/licenses/>."""
 
 
-__version__ = '3.1'
+__version__ = '3.2'
 
 
 import urllib2
@@ -245,7 +245,13 @@ def _get_args(argv=None):
 if __name__ == '__main__':
     logging.basicConfig(format='%(message)s')
     logger.setLevel(logging.INFO)
-    target, user, ignore, verbose, add_own, no_docs, strategy = _get_args()
+    argv = sys.argv[1:]
+    if os.path.isfile(os.path.expanduser('~/.gh_favsrc')):
+        addf = open(os.path.expanduser('~/.gh_favsrc'))
+        add = filter(None, addf.read().split("\n"))
+        addf.close()
+        argv = add + argv
+    target, user, ignore, verbose, add_own, no_docs, strategy = _get_args(argv)
     try:
         clone_favs(
             resolve_fav_conflicts(
