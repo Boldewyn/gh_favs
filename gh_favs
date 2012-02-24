@@ -128,14 +128,18 @@ def clone_favs(favs, target, quiet=True, with_docs=True):
         i += 1
         os.chdir(target)
 
-        if os.path.isdir(fav[0]):
+        if os.path.isdir('%s/.git' % fav[0]):
             logger.info('Update %s (%s of %s)' % (fav[0], i, len(favs)))
             os.chdir(fav[0])
             _call(['git', 'checkout', qflag, 'master'])
             _call(['git', 'pull', qflag, 'origin', 'master'])
+        elif (os.path.isdir(fav[0]) and len(os.listdir(fav[0])) > 0):
+            logger.critical('%s is not a Git repository!' % fav[0])
+            continue
         else:
             logger.info('Clone %s (%s of %s)' % (fav[0], i, len(favs)))
-            os.makedirs(fav[0])
+            if not os.path.isdir(fav[0]):
+                os.makedirs(fav[0])
             os.chdir(fav[0])
             _call(['git', 'clone', qflag, '--recursive', fav[1], '.'])
 

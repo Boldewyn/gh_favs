@@ -88,22 +88,27 @@ class TestFavs(unittest.TestCase):
         """clone favorites with docs"""
         gh_favs.clone_favs(self.mefav, self.tmpdir)
         self.assertTrue(os.path.isdir(self.tmpdir + os.sep + 'gh_favs'))
-        self.assertTrue(os.path.isfile(self.tmpdir + os.sep + 'gh_favs' +
-            os.sep + '.git' + os.sep + 'refs' + os.sep + 'heads' +
-            os.sep + 'gh-pages'))
+        self.assertTrue(os.path.isfile(os.path.join(self.tmpdir, 'gh_favs',
+            '.git', 'refs', 'heads', 'gh-pages')))
 
     def test_clone_nodocs(self):
         """clone favorites w/o docs"""
         gh_favs.clone_favs(self.mefav, self.tmpdir, with_docs=False)
         self.assertTrue(os.path.isdir(self.tmpdir + os.sep + 'gh_favs'))
-        self.assertFalse(os.path.isfile(self.tmpdir + os.sep + 'gh_favs' +
-            os.sep + '.git' + os.sep + 'refs' + os.sep + 'heads' +
-            os.sep + 'gh-pages'))
+        self.assertFalse(os.path.isfile(os.path.join(self.tmpdir, 'gh_favs',
+            '.git', 'refs', 'heads', 'gh-pages')))
 
     def test_clone_verbosly(self):
         """clone verbosly"""
         gh_favs.clone_favs(self.mefav, self.tmpdir, quiet=False)
         self.assertTrue(os.path.isdir(self.tmpdir + os.sep + 'gh_favs'))
+
+    def test_clone_to_existing_directory(self):
+        """clone verbosly"""
+        os.makedirs(self.tmpdir + os.sep + 'gh_favs'+ os.sep + 'delme')
+        gh_favs.clone_favs(self.mefav, self.tmpdir)
+        self.assertFalse(os.path.isdir(self.tmpdir + os.sep + 'gh_favs' +
+                         os.sep + '.git'))
 
     def test_clone_relative(self):
         """clone to a relative target"""
