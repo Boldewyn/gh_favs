@@ -59,6 +59,9 @@ class TestFavs(unittest.TestCase):
         # Let's boldly assume, I'll always watch jquery/jquery
         favs2 = gh_favs.fetch_favs('Boldewyn', ['jquery'], False)
         self.assertTrue(len(favs2) < len(favs1))
+        # explicitly ignore jquery's jquery
+        favs2 = gh_favs.fetch_favs('Boldewyn', ['jquery/jquery'], False)
+        self.assertEqual(len(favs1) - len(favs2), 1)
 
     def test_resolve_prefix(self):
         """resolve conflicts with prefixes"""

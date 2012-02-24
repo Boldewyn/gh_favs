@@ -60,18 +60,21 @@ except ImportError:
     argparse = None
 
 
+logger = logging.getLogger('github.favs')
+
+
 def fetch_favs(user, ignore=[], add_own=False, quiet=True, page=1):
     """Fetch the list of watched repos for a user from GitHub
 
     Own repos are excluded per default. Set add_own to True to add them."""
 
-    logger = logging.getLogger('github.favs')
     if not quiet:
         logger.info('Fetch page %s' % page)
     try:
         r = urllib2.urlopen('https://api.github.com/users/%s/watched?page=%s' %
                             (user, page))
     except urllib2.URLError:
+        logger.critical('Request failed. Are you online?')
         raise ValueError('Request failed. Are you online?')
     favs = []
 
@@ -82,8 +85,10 @@ def fetch_favs(user, ignore=[], add_own=False, quiet=True, page=1):
     ls = json.loads(r.read())
     for item in ls:
         if (item['name'] not in ignore and
+            '%s/%s' % (item['owner']['login'], item['name']) not in ignore and
             (add_own or item['owner']['login'] != user)):
-            favs.append([item['name'], item['clone_url'], item['owner']['login']])
+            favs.append([item['name'], item['clone_url'],
+                         item['owner']['login']])
 
     link = r.headers.getheader('Link')
     if 'rel="next"' in link:
@@ -98,7 +103,6 @@ def clone_favs(favs, target, quiet=True, with_docs=True):
     target is the directory where to clone to
     quiet suppresses most Git status messages"""
 
-    logger = logging.getLogger('github.favs')
     i = 0
     logger.info('Fetch repositories to %s' % target)
 
@@ -117,6 +121,8 @@ def clone_favs(favs, target, quiet=True, with_docs=True):
             logger.debug(stdout)
         else:
             logger.info(stdout)
+        if stderr:
+            logger.info(stderr)
 
     for fav in favs:
         i += 1
@@ -134,7 +140,7 @@ def clone_favs(favs, target, quiet=True, with_docs=True):
             _call(['git', 'clone', qflag, '--recursive', fav[1], '.'])
 
         if with_docs:
-            # check out docs / website
+            logger.debug('check out docs / website')
             br = subprocess.check_output(['git', 'branch', '-r'])
             if 'origin/gh-pages' in br:
                 br = subprocess.check_output(['git', 'branch'])
@@ -226,7 +232,6 @@ def _get_args(argv=None):
         args.strategy = 'subfolders'
 
     if not os.path.isdir(args.target):
-        logger = logging.getLogger('github.favs')
         logger.debug('Create directory %s' % args.target)
         os.makedirs(args.target)
     return (args.target, args.user, args.ignore, args.verbose, args.add_own,
@@ -235,7 +240,7 @@ def _get_args(argv=None):
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(message)s')
-    logging.getLogger('github.favs').setLevel(logging.INFO)
+    logger.setLevel(logging.INFO)
     target, user, ignore, verbose, add_own, no_docs, strategy = _get_args()
     try:
         clone_favs(
