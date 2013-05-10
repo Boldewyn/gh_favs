@@ -1,6 +1,6 @@
                            gh_favs - Github Favorites
 
-      A small script to clone and update all your watched GitHub projects
+      A small script to clone and update all your starred GitHub projects
 
 
 Usage: gh_favs [-t DIR] [-i NAME] [-o] [-n] [-s STRATEGY] [-v] USER
